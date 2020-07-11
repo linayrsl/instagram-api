@@ -1,3 +1,6 @@
 node_modules
 .idea
 .vscode
+public
+!public/posts/.gitkeep
+.DS_Store
