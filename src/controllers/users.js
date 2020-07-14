@@ -1,7 +1,11 @@
 const md5 = require("md5");
 const HTTP_STATUS_CODES = require("http-status-codes");
 const jwt = require("jsonwebtoken");
+const mongoose = require("mongoose");
+
+const { ObjectId } = mongoose.Types;
 const User = require("../models/user");
+const Post = require("../models/post");
 const config = require("../config/env/index");
 
 const ERROR_DUPLICATE_VALUE = 11000;
@@ -86,6 +90,18 @@ class Users {
         return;
       }
       res.status(400).json(error);
+    }
+  }
+
+  async getPostsByUserId(req, res) {
+    try {
+      const posts = await Post.find({
+        userId: ObjectId(req.params.id),
+      })
+        .sort({ createdAt: req.query.sort || 1 });
+      res.status(HTTP_STATUS_CODES.OK).json(posts);
+    } catch (error) {
+      console.error(error);
     }
   }
 }

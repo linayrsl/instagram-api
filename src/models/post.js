@@ -4,7 +4,7 @@ const { ObjectId } = mongoose.Types;
 
 const Post = new mongoose.model("Post", {
   userId: {
-    // required: true,
+    required: true,
     type: ObjectId,
   },
   description: String,

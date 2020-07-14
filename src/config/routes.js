@@ -30,6 +30,7 @@ const routes = express.Router();
 
 routes.get("/users", users.getAll);
 routes.get("/users/current", users.getUserDetails);
+routes.get("/users/:id/posts", users.getPostsByUserId);
 routes.put("/users/register", users.create);
 routes.get("/users/logout", users.logout);
 routes.post("/users/login", users.login);
