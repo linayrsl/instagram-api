@@ -39,6 +39,8 @@ routes.post("/users/validate/username", users.buildValidationHandler("username")
 
 routes.put("/posts", /* upload.single("image"), */ posts.create);
 routes.get("/posts", posts.getPosts);
+routes.post("/posts/:id/likes", posts.addLikes);
+routes.delete("/posts/:id/likes/", posts.removeLikes);
 
 routes.get("/health", (req, res) => {
   res.send();

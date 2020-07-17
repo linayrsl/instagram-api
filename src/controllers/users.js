@@ -46,12 +46,29 @@ class Users {
 
   async getAll(req, res) {
     try {
-      const users = await User.find();
-      res.status(HTTP_STATUS_CODES.OK).json(users);
+      const regex = new RegExp(req.query.username || "", "i");
+      const users = await User.find({
+        username: regex,
+      })
+        .select(["username", "avatar", "bio"])
+        .limit(10);
+      res.json(users);
     } catch (error) {
-      res.status(HTTP_STATUS_CODES.INTERNAL_SERVER_ERROR).json(error);
+      res.status(HTTP_STATUS_CODES.INTERNAL_SERVER_ERROR)
+        .json(error);
     }
   }
+
+  // async searchAll(req, res) {
+  //   try {
+  //     const users = await User
+  //       .find()
+  //
+  //       .res.status(HTTP_STATUS_CODES.OK).json(users);
+  //   } catch (error) {
+  //     res.status(HTTP_STATUS_CODES.INTERNAL_SERVER_ERROR).json(error);
+  //   }
+  // }
 
   async logout(req, res) {
     res.clearCookie(config.authCookie);
@@ -96,8 +113,9 @@ class Users {
   async getPostsByUserId(req, res) {
     try {
       const posts = await Post.find({
-        userId: ObjectId(req.params.id),
+        user: ObjectId(req.params.id),
       })
+        .populate("user", ["_id", "avatar", "username"])
         .sort({ createdAt: req.query.sort || 1 });
       res.status(HTTP_STATUS_CODES.OK).json(posts);
     } catch (error) {
