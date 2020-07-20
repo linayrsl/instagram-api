@@ -36,6 +36,7 @@ routes.get("/users/logout", users.logout);
 routes.post("/users/login", users.login);
 routes.post("/users/validate/email", users.buildValidationHandler("email"));
 routes.post("/users/validate/username", users.buildValidationHandler("username"));
+routes.post("/user/:id", users.updateUser);
 
 routes.put("/posts", /* upload.single("image"), */ posts.create);
 routes.get("/posts", posts.getPosts);

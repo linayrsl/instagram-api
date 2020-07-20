@@ -13,7 +13,6 @@ const DURATION_60D = 60 * 60 * 24 * 60 * 1000;
 
 class Users {
   async getUserDetails(req, res) {
-    console.log(req.user);
     const userId = req.user.id;
     const user = await User.findById(userId);
     res.status(200).json(user);
@@ -107,6 +106,25 @@ class Users {
         return;
       }
       res.status(400).json(error);
+    }
+  }
+
+  async updateUser(req, res) {
+    try {
+      // const userId = req.user.id;
+      const filter = { _id: ObjectId(req.params.id) };
+      const update = { avatar: req.body.image, biography: req.body.biography };
+      const user = await User.findOneAndUpdate(
+        filter,
+        update,
+        {
+          new: true,
+        },
+      );
+      res.status(HTTP_STATUS_CODES.OK).json(user);
+    } catch (error) {
+      console.error(error);
+      res.status(HTTP_STATUS_CODES.INTERNAL_SERVER_ERROR).json(error);
     }
   }
 

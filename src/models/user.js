@@ -20,6 +20,9 @@ const User = new mongoose.model("User", {
     type: Date,
     default: () => new Date(),
   },
+  bio: {
+    type: String,
+  },
 });
 
 module.exports = User;
