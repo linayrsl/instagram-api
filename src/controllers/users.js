@@ -43,6 +43,21 @@ class Users {
     };
   }
 
+  async getUser(req, res) {
+    try {
+      const user = await User
+        .findById(req.params.id)
+        .select(["username", "bio", "createdAt", "avatar"]);
+      if (!user) {
+        res.status(HTTP_STATUS_CODES.NOT_FOUND);
+        return;
+      }
+      res.status(HTTP_STATUS_CODES.OK).json(user);
+    } catch (error) {
+      res.status(HTTP_STATUS_CODES.BAD_REQUEST).json(error);
+    }
+  }
+
   async getAll(req, res) {
     try {
       const regex = new RegExp(req.query.username || "", "i");
@@ -113,7 +128,7 @@ class Users {
     try {
       // const userId = req.user.id;
       const filter = { _id: ObjectId(req.params.id) };
-      const update = { avatar: req.body.image, biography: req.body.biography };
+      const update = { avatar: req.body.image, bio: req.body.biography };
       const user = await User.findOneAndUpdate(
         filter,
         update,

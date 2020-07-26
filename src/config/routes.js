@@ -25,6 +25,7 @@ const storage = multer.diskStorage({
 const upload = multer({ storage });
 const users = require("../controllers/users");
 const posts = require("../controllers/posts");
+const comments = require("../controllers/comments");
 
 const routes = express.Router();
 
@@ -36,12 +37,17 @@ routes.get("/users/logout", users.logout);
 routes.post("/users/login", users.login);
 routes.post("/users/validate/email", users.buildValidationHandler("email"));
 routes.post("/users/validate/username", users.buildValidationHandler("username"));
+routes.get("/users/:id", users.getUser);
 routes.post("/user/:id", users.updateUser);
 
 routes.put("/posts", /* upload.single("image"), */ posts.create);
 routes.get("/posts", posts.getPosts);
+routes.get("/posts/:id", posts.getPostById);
 routes.post("/posts/:id/likes", posts.addLikes);
-routes.delete("/posts/:id/likes/", posts.removeLikes);
+routes.delete("/posts/:id/likes", posts.removeLikes);
+
+routes.put("/posts/:id/comment", comments.createComment);
+routes.get("/posts/:id/comment", comments.getComments);
 
 routes.get("/health", (req, res) => {
   res.send();

@@ -21,6 +21,22 @@ class Posts {
     }
   }
 
+  async getPostById(req, res) {
+    try {
+      const post = await Post
+        .findById(req.params.id)
+        .populate("user", ["avatar", "username"]);
+      if (!post) {
+        res.status(HTTP_STATUS_CODES.NOT_FOUND);
+        return;
+      }
+      res.status(HTTP_STATUS_CODES.OK).json(post);
+    } catch (error) {
+      console.log(error);
+      res.status(HTTP_STATUS_CODES.BAD_REQUEST).json(error);
+    }
+  }
+
   async getPosts(req, res) {
     try {
       const posts = await Post
@@ -45,7 +61,8 @@ class Posts {
         {
           new: true,
         },
-      );
+      )
+        .populate("user", ["_id", "avatar", "username"]);
       if (post === null) {
         res.sendStatus(HTTP_STATUS_CODES.CONFLICT);
         return;
@@ -67,7 +84,8 @@ class Posts {
         {
           new: true,
         },
-      );
+      )
+        .populate("user", ["_id", "avatar", "username"]);
       console.log(post);
       res.status(HTTP_STATUS_CODES.OK).json(post);
     } catch (error) {

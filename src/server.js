@@ -26,7 +26,7 @@ app.use(jwt({
     }
     return null;
   },
-}).unless({ path: ["/users/register", "/users/login", "/users/validate/email", "/users/validate/username"] }));
+}).unless({ path: ["/users/register", "/users/login", "/users/validate/email", "/users/validate/username", "/posts/:id/comment"] }));
 app.use(express.static("public"));
 app.use(routes);
 
