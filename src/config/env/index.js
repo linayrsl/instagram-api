@@ -1,9 +1,9 @@
 const development = require("./development");
 const production = require("./production");
 
-let environment = "development";
+let environment = development;
 if (process.env.NODE_ENV === "production") {
-  environment = "production";
+  environment = production;
 }
 
-module.exports = environment === "development" ? development : production;
+module.exports = environment;
