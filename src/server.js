@@ -8,7 +8,7 @@ const routes = require("./config/routes");
 const config = require("./config/env/index");
 
 const app = express();
-const { port } = config.port;
+const { port } = config;
 
 app.use((cors({
   origin: true,
