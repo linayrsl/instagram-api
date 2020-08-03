@@ -2,8 +2,6 @@ const HTTP_STATUS_CODES = require("http-status-codes");
 const mongoose = require("mongoose");
 const Comment = require("../models/comment");
 
-const { ObjectId } = mongoose.Types;
-
 class Comments {
   async createComment(req, res) {
     const comment = new Comment({
@@ -13,9 +11,14 @@ class Comments {
     });
     try {
       const createdComment = await comment.save();
-      res.status(201).json(createdComment);
+      res.status(HTTP_STATUS_CODES.CREATED).json(
+        await Comment
+          .findById(createdComment._id)
+          .populate("user", ["avatar", "username"]),
+      );
     } catch (error) {
-      res.status(400).json(error);
+      console.error(error);
+      res.status(HTTP_STATUS_CODES.INTERNAL_SERVER_ERROR).json(error);
     }
   }
 
@@ -24,9 +27,9 @@ class Comments {
       const comments = await Comment
         .find({ postId: req.params.id })
         .populate("user", ["avatar", "username"]);
-      res.status(200).json(comments);
+      res.status(HTTP_STATUS_CODES.OK).json(comments);
     } catch (error) {
-      res.status(500).json(error);
+      res.status(HTTP_STATUS_CODES.INTERNAL_SERVER_ERROR).json(error);
     }
   }
 }

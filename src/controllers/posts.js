@@ -6,7 +6,6 @@ const { ObjectId } = mongoose.Types;
 
 class Posts {
   async create(req, res) {
-    console.log(req.body);
     const post = new Post({
       // user: req.user.id,
       user: req.user.id,

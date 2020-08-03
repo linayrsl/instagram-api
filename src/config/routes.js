@@ -26,6 +26,7 @@ const upload = multer({ storage });
 const users = require("../controllers/users");
 const posts = require("../controllers/posts");
 const comments = require("../controllers/comments");
+const followers = require("../controllers/followers");
 
 const routes = express.Router();
 
@@ -48,6 +49,10 @@ routes.delete("/posts/:id/likes", posts.removeLikes);
 
 routes.put("/posts/:id/comment", comments.createComment);
 routes.get("/posts/:id/comment", comments.getComments);
+
+routes.put("/users/:id/follow", followers.createFollow);
+routes.get("/users/:id/follow/followers", followers.getFollowers);
+routes.get("/users/:id/follow/following", followers.getFollowing);
 
 routes.get("/health", (req, res) => {
   res.send();
