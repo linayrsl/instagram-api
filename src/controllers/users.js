@@ -73,16 +73,81 @@ class Users {
     }
   }
 
-  // async searchAll(req, res) {
-  //   try {
-  //     const users = await User
-  //       .find()
-  //
-  //       .res.status(HTTP_STATUS_CODES.OK).json(users);
-  //   } catch (error) {
-  //     res.status(HTTP_STATUS_CODES.INTERNAL_SERVER_ERROR).json(error);
-  //   }
-  // }
+  async getStats(req, res) {
+    // The signed in user
+    const currentUserId = req.user.id;
+    console.log(currentUserId);
+    // The user that we looking at
+    const profileId = req.params.id;
+    try {
+      const userStats = await User
+        .aggregate()
+        .match({ _id: { $eq: ObjectId(profileId) } })
+        .lookup({
+          from: "posts", localField: "_id", foreignField: "user", as: "posts",
+        })
+        .lookup({
+          from: "follows", localField: "_id", foreignField: "userId", as: "following",
+        })
+        .lookup({
+          from: "follows", localField: "_id", foreignField: "followedUser", as: "followers",
+        })
+        .addFields({
+          postsCount: {
+            $size: "$posts",
+          },
+          followsCount: {
+            $size: "$following",
+          },
+          followersCount: {
+            $size: "$followers",
+          },
+          isFollowedByCurrentUser: {
+            // Searches for intersection between currentUserId and followers array.
+            // If current user is following the profile
+            // then intersection returns array with 1 element
+            // and it's size is compared to 1 using $eq expression.
+            // The result of "$eq" expression is assigned to a field "isFollowedByCurrentUser".
+            $eq: [
+              {
+                $size: {
+                  $ifNull: [
+                    {
+                      $setIntersection: [
+                        {
+                          // Mapping followers array to array of ObjectIds
+                          // in order to be able match against current user ObjectId.
+                          $map:
+                            {
+                              input: "$followers",
+                              as: "follower",
+                              in: "$$follower.userId",
+                            },
+                        },
+                        [ObjectId(currentUserId)],
+                      ],
+                    },
+                    [],
+                  ],
+                },
+              },
+              1,
+            ],
+          },
+        })
+        .project({
+          postsCount: true,
+          followsCount: true,
+          followersCount: true,
+          isFollowedByCurrentUser: true,
+        });
+      res.json(userStats[0]);
+    } catch (error) {
+      console.error(error);
+      res.status(HTTP_STATUS_CODES.INTERNAL_SERVER_ERROR)
+        .json(error);
+    }
+  }
 
   async logout(req, res) {
     res.clearCookie(config.authCookie);

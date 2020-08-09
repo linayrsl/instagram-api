@@ -40,6 +40,7 @@ routes.post("/users/validate/email", users.buildValidationHandler("email"));
 routes.post("/users/validate/username", users.buildValidationHandler("username"));
 routes.get("/users/:id", users.getUser);
 routes.post("/user/:id", users.updateUser);
+routes.get("/users/:id/stats", users.getStats);
 
 routes.put("/posts", /* upload.single("image"), */ posts.create);
 routes.get("/posts", posts.getPosts);
@@ -53,6 +54,7 @@ routes.get("/posts/:id/comment", comments.getComments);
 routes.put("/users/:id/follow", followers.createFollow);
 routes.get("/users/:id/follow/followers", followers.getFollowers);
 routes.get("/users/:id/follow/following", followers.getFollowing);
+routes.post("/users/:id/unfollow", followers.unfollowUser);
 
 routes.get("/health", (req, res) => {
   res.send();

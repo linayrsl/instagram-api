@@ -19,6 +19,17 @@ class Followers {
     }
   }
 
+  async unfollowUser(req, res) {
+    try {
+      await Follow.findOneAndRemove({
+        followedUser: ObjectId(req.params.id),
+      });
+      res.sendStatus(HTTP_STATUS_CODES.OK);
+    } catch (error) {
+      console.error(error);
+    }
+  }
+
   async getFollowers(req, res) {
     try {
       const followers = await Follow.find({

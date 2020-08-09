@@ -37,11 +37,20 @@ class Posts {
 
   async getPosts(req, res) {
     try {
+      const { userId } = req.query;
+      const { page } = req.query;
+      const POSTS_PER_PAGE = 10;
+      const postsTOSkip = (page - 1) * POSTS_PER_PAGE;
+      const query = {};
+      if (userId) {
+        query.user = userId;
+      }
       const posts = await Post
-        .find()
+        .find(query)
         .sort({ createdAt: req.query.sort || 1 })
-        .populate("user", ["_id", "avatar", "username"]);
-
+        .populate("user", ["_id", "avatar", "username"])
+        .skip(postsTOSkip)
+        .limit(POSTS_PER_PAGE);
       res.status(200).json(posts);
     } catch (err) {
       console.log(err);
