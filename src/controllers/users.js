@@ -166,10 +166,8 @@ class Users {
         return;
       }
       const token = jwt.sign({ id: user._id.toString() }, config.secretKey, { expiresIn: "1d" });
-      res.cookie(config.authCookie, token, {
-        maxAge: DURATION_60D, httpOnly: true, secure: process.env.NODE_ENV === "production", sameSite: "none",
-      });
-      res.status(200).json(user);
+      console.log(user);
+      res.status(200).json({ ...user.toObject(), token });
     } catch (error) {
       console.error(error);
       res.sendStatus(500);

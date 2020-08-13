@@ -20,12 +20,6 @@ app.use(cookieParser());
 app.use(jwt({
   algorithms: ["HS256"],
   secret: config.secretKey,
-  getToken: (req) => {
-    if (req.cookies[config.authCookie]) {
-      return req.cookies[config.authCookie];
-    }
-    return null;
-  },
 }).unless({ path: ["/users/register", "/users/login", "/users/validate/email", "/users/validate/username", "/posts/:id/comment"] }));
 app.use(express.static("public"));
 app.use(routes);
