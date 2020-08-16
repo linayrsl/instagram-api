@@ -50,6 +50,7 @@ routes.delete("/posts/:id/likes", posts.removeLikes);
 
 routes.put("/posts/:id/comment", comments.createComment);
 routes.get("/posts/:id/comment", comments.getComments);
+routes.get("/posts/:postId/comment/:commentId", comments.getCommentById);
 
 routes.put("/users/:id/follow", followers.createFollow);
 routes.get("/users/:id/follow/followers", followers.getFollowers);
