@@ -1,6 +1,8 @@
 const HTTP_STATUS_CODES = require("http-status-codes");
 const mongoose = require("mongoose");
 const Post = require("../models/post");
+const pusher = require("../pusher");
+const config = require("../config/env/index");
 
 const { ObjectId } = mongoose.Types;
 
@@ -13,6 +15,11 @@ class Posts {
     });
     try {
       const createdPost = await post.save();
+      pusher.trigger(config.pusherChannel, "addPosts", {
+        // eslint-disable-next-line no-underscore-dangle
+        postId: createdPost._id,
+        userId: req.user.id,
+      });
       res.status(201).json(createdPost);
     } catch (error) {
       res.status(400).json(error);
@@ -177,6 +184,12 @@ class Posts {
         res.sendStatus(HTTP_STATUS_CODES.CONFLICT);
         return;
       }
+      if (result.nModified > 0) {
+        pusher.trigger(config.pusherChannel, "postLike", {
+          postId: req.params.id,
+          userId: req.user.id,
+        });
+      }
       res.sendStatus(HTTP_STATUS_CODES.OK);
     } catch (error) {
       console.error(error);
@@ -188,10 +201,16 @@ class Posts {
     try {
       const filter = { _id: ObjectId(req.params.id) };
       const update = { $pull: { likes: ObjectId(req.user.id) } };
-      await Post.updateOne(
+      const result = await Post.updateOne(
         filter,
         update,
       );
+      if (result.nModified > 0) {
+        pusher.trigger(config.pusherChannel, "postUnLike", {
+          postId: req.params.id,
+          userId: req.user.id,
+        });
+      }
       res.sendStatus(HTTP_STATUS_CODES.OK);
     } catch (error) {
       console.error(error);
